@@ -151,7 +151,7 @@ $$\DeclareMathOperator*{\argmin}{argmin}$$
 
 --
 
-- Plusieurs algorithmes d'apprentissage supervisés ont été développés pour résoudre ce problème d'optimisation (GLMs, arbres de décision, forêts aléatoires, boosting, réseaux de neurones, régularisation, etc.)
+- Plusieurs algorithmes d'apprentissage supervisés ont été développés pour résoudre ce problème d'optimisation (GLMs, arbres de décision, forêts aléatoires, boosting, réseaux de neurones, régularisation, etc.).
 
 ???
 
@@ -208,6 +208,7 @@ knitr::include_graphics("images/tuning.png")
 - Un hyperparamètre, c'est simplement un paramètre qui n'est pas entrainé (ou optimisé) directement par l'algorithme.
 - Ces hyperparamètres doivent donc être optimisés par le modélisateur.
 - Il existe plusieurs algorithmes pour faire la calibration des hyperparamètres, comme l'optimisation Bayesienne, mais une manière simple de faire (et souvent suffisante) est de se faire une grille et d'essayer toutes les combinaisons de cette grille. On choisit alors la combinaison menant à la meilleure performance sur des exemples hors-échantillon.
+- Ici on a un exemple de recherche par grille pour un modèle de forêt aléatoire. Donc on a essayé 3 valeurs pour chacun des 2 hyperparamètres, et il semble que 3 variables candidates et un arbre de profondeur 5 ou 15 mène à la meilleure performance. 
 
 ---
 
@@ -222,6 +223,16 @@ knitr::include_graphics("images/tuning.png")
 ```{r echo = F, out.width = "55%", fig.align = "center"}
 knitr::include_graphics("images/separation.png")
 ```
+
+???
+
+- Après voir calibré les hyperparamètres en entrainé notre modèle en utilisant les meilleurs hyperparamètres trouvés, on veut estimer sa performance de généralisation, c'est-à-dire la performance sur de toutes nouvelles données.
+- La performance obtenues sur l'ensemble de validation ou par validation croisée n'est souvent pas une bonne estimation de la performance de généralisation.
+- La raison est qu'il peut y avoir fuite d'information de l'ensemble de validation vers l'ensemble d'entrainement, ce qui va artificiellement augmenter la performance.
+- Ça peut arriver par exemple si notre prétraitement (par exemple, centrer-réduire les prédicteurs) ne fait pas partie de notre pipeline de modélisation. Autrement dit, si on applique le prétraitement une seule fois sur le jeu de données au complet et qu'ensuite, on fait notre modélisation.
+- Heureusement, des outils existent pour « greffer » un prétraitement des données au modèles. Par exemple, le pacakge « recipes » dans tidymodels ou bien les pipelines de sickit-learn en Python.
+- Il y a aussi des manières plus subtiles de fuiter de l'information. Par exemple, le processus de calibration des hyperparamètres va presque systématiquement faire fuiter de l'information de l'ensemble de validation vers l'ensemble d'entrainement. Il y a en effet un genre de sélection artificielle des modèles qui se produit, et la performance de validation sera souvent gonflée (donc le modèle sera moins bon qu'on le pense).
+- Il est donc recommandé, pour bien estimer la performance, de se garder un ensemble test qu'on utilise seulement qu'à la toute fin du processus, et seulement pour quelques modèles.
 
 ---
 
@@ -249,6 +260,13 @@ knitr::include_graphics("images/separation.png")
 ]
 
 - Ainsi que le **nombre de réclamations** pour chaque contrat.
+
+???
+
+- Maintenant, je vous présente les données utilisées. Ce sont des données gracieusement fournies par Co-operators via la Chaire.
+- Ça c'est les facteurs de risque traditionnels que j'utilise, incluant l'exposition au risque.
+- Ce sont des données par contrat, et pour chaque contrat, on a l'information du nombre de réclamations faites durant la période de couverture.
+
 ---
 
 # Introduction
@@ -271,9 +289,15 @@ knitr::include_graphics("images/separation.png")
 - 118 millions de trajets
 - Période: 2015-2018
 
+???
+
+- J'ai aussi accès à des données télématiques sous la forme de résumés de trajets.
+- Chaque trajet est décrit par 4 attributs, soit la date et heure de départ et d'arrivée, la distance parcourue et la vitesse maximale atteinte.
+- Évidemment, ces trajets peuvent être liés à la base de données par contrat.
+
 ---
 
-# Chapitre 1 - How much telematics...
+# Chapitre 1 - How Much Telematics...
 
 ## Motivations
 
@@ -281,6 +305,15 @@ knitr::include_graphics("images/separation.png")
 - Données volumineuses qui peuvent être difficile et coûteuses à stocker.
 - De plus, peuvent être longues à processer.
 - D'où la question « Quelle quantité d'information télématique a-t-on besoin? ».
+
+???
+
+- Ce qui nous amène au premier article, « How Much Telematics Information Do Insurers Need for Claim Classification? ».
+- Donc la motivation pour cet article vient d'un inconvénient des données télématiques.
+- Cet inconvénient, c'est que ce sont des données souvent très volumineuses.
+- C'est donc difficile et coûteux à stocker, mais ce sont aussi des données qui coûtent cher en temps de calcul.
+- On s'est donc posés la question à savoir quelle quantité d'information télématique est nécessaire pour avoir une bonne évaluation du risque.
+- On tente de répondre à cette question sous l'angle de la classification supervisée.
 
 ---
 
@@ -294,6 +327,12 @@ knitr::include_graphics("images/extraction.png")
 
 - Variables extraites à partir de la **date-heure** de **départ** et d'**arrivée**, de la **distance** et de la **vitesse maximale** de chaque trajet.
 
+???
+
+- On s'est tout d'abord créé des variables télématiques à partir des résumés de trajets. Donc les voici.
+- Ce sont des variables qui, selon nous, pourraient être liées au risque de réclamer.
+- Par exemple, on a la distance moyenne par jour et la proportion de conduite de nuit.
+
 ---
 
 # Chapitre 1 - How much telematics...
@@ -306,6 +345,14 @@ knitr::include_graphics("images/performance_1.png")
 
 - Tous les modèles utilisent les **variables de tarification traditionnelle** + les **variables télématiques extraites**.
 - Variable réponse: indicatrice d'une réclamation (0 ou 1).
+
+???
+
+- On a d'abord testé plusieurs modèles.
+- Les GLM régularisés (donc le lasso et l'elastic-net) se sont avérés plus performants que la forêt aléatoire, ce qui suggère que la relation entre les prédicteurs et la réponse est plutôt linéaire.
+- On a également testé le lasso et l'elastic-net avec toutes les interactions 2 à 2, ce qui n'a pas mené à un gain de performance, ce qui laisse penser encore une fois que la relation est plutôt linéaire.
+- On choisit le lasso sans interactions, qui a la meilleure performance de validation croisée (à égalité avec l'elastic-net en fait, si on tient compte de l'écart-type entre parenthèses. On choisit le lasso puisqu'il mène à des modèles plus parcimonieux que l'elastic-net.).
+- On a également estimé la performance de généralisation sur un ensemble test.
 
 ---
 
@@ -321,6 +368,12 @@ background-position: 95% 80%
 - Les k jeux de données <br> ont en commun les <br> variables de tarification <br> traditionnelles.
 - Seule la quantité <br> d'information <br> télématique varie entre <br> les jeux de données.
 
+???
+
+- Donc avec notre modèle lasso en mains, voici comment on procède pour estimer la quantité de données télématiques nécessaire pour avoir une bonne estimation du risque.
+- On se crée k jeux de données de classification. La différence entre les jeux de données est la quantité de données télématiques utilisée, qui va en augmentant de jeu de données en jeu de données.
+- On va ensuite aller évaluer la performance de notre modèle de classification sur chaque jeu de données.
+
 ---
 
 background-image: url(images/results_1.png)
@@ -334,11 +387,17 @@ background-position: 100% 80%
 - Expérience également faite avec <br> le nombre de mois de données <br> télématiques (résultats <br> non-montrés ici).
 - Les données télématiques <br> deviennent redondantes <br> après environ **4000 km** ou <br> **3 mois**.
 
+???
+
+- Voici les résultats. Donc ici, chaque jeu de données a 1000km de données télématiques de plus que le précédent.
+- On a utilisé du bootstrap pour obtenir une distribution de l'aire sous la courbe ROC pour chaque jeu de données.
+- Il s'avère qu'après environ 4000km, la performance se stabilise. On a aussi le même graphique, mais où chaque jeu de données a un mois de données télématiques de plus que le précédent, et il se trouve que la performance se stabilise après environ 3 mois de données. 
 
 ---
 
 # Chapitre 2 - Enhancing Claim Classification...
 .vspace-neg2[]
+
 ## Introduction et motivations
 
 .titre-bloc.bleu[
