@@ -82,7 +82,11 @@ De nombreux bénéfices!
 - Ces données peuvent inclure la distance parcourue par l'assuré, les heures de conduite, la localisation, les freinages brusques, et bien d'autres encore.
 - Traditionnellement, la tarification est faite en ne regardant pas l'utilisation du véhicule. On tarifie avec un ensemble de caratéristiques du risque comme l'âge et le genre de l'assuré, l'âge du véhicule, la région et plusieurs autres.
 
-- 
+- Tarifer selon l'utilisation offre de nombreux avantages pour tout le monde. 
+- Avant tout, ça constitue un incitatif à mieux et à moins conduire pour les assurés, ce qui permet d'améliorer la sécurité des routes et de diminuer la pollution. Donc on a une diminution de l'aléa moral, un effet qui est omniprésent en assurance.
+- Pour un assureur, ça permet de mieux segmenter la prime, et donc d'aller chercher un avantage compétitif.
+- Les données télématiques peuvent également servir de substitus à des attributs sensibles ou des attributs qui sont interdits d'utilisation par la loi. Par exemple, dans certaines juridictions, on ne peut pas tarifer selon le genre de l'assuré.
+- Je n'ai pas parlé des inconvénients ici, mais c'est certain qu'utilisées de manière intelligente et responsable, les bénéfices qu'on peut tirer des données télématiques surpassent les inconvénients, et c'est pour ça que c'est important de faire de la recherche là-dessus.   
 
 ---
 
@@ -97,20 +101,59 @@ background-position: 95% 20%
 
 ## Apprentissage supervisé &amp;#x2014; Idée générale
 
+.vspace-neg2[]
+
 - Requiert un ensemble d'**exemples étiquetés**
 `\begin{align*}
   \{(\boldsymbol{x}_i, y_i)\}_{i=1}^n, \quad \text{où}\quad \boldsymbol{x}_i \in \mathcal{X},\quad y \in \mathcal{Y}
 \end{align*}`
 
+???
+
+- Le principal outil utilisé dans la thèse est l'apprentissage supervisé.
+- Pour être entrainé, un algorithme d'apprentissage supervisé requiert un jeu de données d'exemples étiquetés.
+- Donc pour chaque exemple i, on a un vecteur de prédicteurs x qui est associé à une étiquette, ou variable réponse y.
+- Par exemple, la variable d'intérêt y pourrait être le coût de réclamation et x, un vecteur de caractéristiques du risque.
+
+--
+
 - But: modéliser la **variable réponse** `\(y\)` à l'aide des **prédicteurs** `\(\boldsymbol{x}\)`. On cherche une fonction `\(h: \mathcal{X} \rightarrow \mathcal{A}\)`, où `\(\mathcal{A}\)` est l'ensemble des prédictions possibles, telle que `\(h(\boldsymbol{x})\)` est la plus « proche » possible de `\(y\)`.
+
+???
+
+- y, c'est notre variable d'intérêt qu'on veut modéliser avec l'aide de notre vecteur x.
+- Donc en fait, on cherche une fonction de x qui va nous donner une valeur la plus proche possible de y.
+
+--
 
 - Pour définir « proche », on introduit une **fonction de perte** `\(\ell: \mathcal{A} \times \mathcal{Y} \rightarrow \mathbb{R}^+\)`.
 - `\(\ell[h(\boldsymbol{x}), y]\)` mesure la « distance » entre la prédiction `\(h(\boldsymbol{x})\)` et la réponse `\(y\)`.
+
+???
+
+- Pour définir « proche », on introduit une fonction de perte `\(\ell\)` qui va pour but de mesurer la « distance » entre la prédiction h(x) et la réponse y.
+
+--
+
 - Pour trouver une bonne fonction `\(h^*\)`, on va (essayer de) minimiser le **risque empirique**, c'est-à-dire la perte moyenne sur l'ensemble d'exemples:
 `\begin{align*}
   h^* = \argmin_{h} \frac{1}{n}\sum_{i=1}^n \ell[h(\boldsymbol{x}_i), y_i]. 
 \end{align*}`
-- Plusieurs algorithmes d'apprentissage supervisés ont été développés pour résoudre ce problème d'optimisation (GLMs, arbres de décision, forêts aléatoires, boosting, réseaux de neurones, régularisation, etc.) 
+
+???
+
+- Et ensuite, pour trouver notre fonction h, on va habituellement essayer de minimiser ce qu'on appelle le « risque empirique » sur nos exemples d'entrainement.
+- Le risque empirique, c'est simplement la somme (ou la moyenne) de la fonction de perte évaluée sur chacun des exemples.
+
+--
+
+- Plusieurs algorithmes d'apprentissage supervisés ont été développés pour résoudre ce problème d'optimisation (GLMs, arbres de décision, forêts aléatoires, boosting, réseaux de neurones, régularisation, etc.)
+
+???
+
+- Pour trouver une bonne fonction h, plusieurs algorithmes ont été développés.
+- Ces algorithmes d'apprentissage nous définissent en fait un espace de recherche pour la fonction h ainsi qu'une recette pour trouver la fonction optimale (ou une bonne fonction) dans cet espace.
+
 ---
 
 # Introduction
@@ -126,6 +169,19 @@ background-position: 95% 20%
 
 - Le compromis biais-variance dit que l'on peut « troquer » du biais contre de la variance, et vice-versa.
 
+???
+
+- Un concept très important en apprentissage supervisé est le compromis biais-variance, qui est intimement lié aux concepts de sous-ajustement et surajustement.
+- Donc tout d'abord, on peut décomposer l'erreur en 3 parties: le biais au carré, la variance et l'erreur irréductible.
+- L'erreur irréductible, c'est l'erreur qu'on ferait même si on avait le meilleur modèle possible, c'est-à-dire si on savait la fonction qui a généré les données. On a pas de contrôle là-dessus.
+- Par contre, on a le contrôle sur le biais et la variance, et donc si on veut diminuer l'erreur, on peut diminuer un des 2.
+- Et ce que le compromis biais-variance dit en fait, c'est que si l'un augmente, alors l'autre va systématiquement diminuer, et vice-versa.
+- L'idée en apprentissage supervisé est de trouver un bon compromis, c'est-à-dire un compromis qui va minimiser l'erreur.
+
+- Donc ici à gauche, on a un modèle qui a une variance faible mais un biais élevé. On dit qu'il y a sous-ajustement. On aurait intérêt à augmenter la variance pour diminuer le biais. Et bien sûr, on espère que la diminution en biais va plus que compenser pour l'augmentation de la variance.
+- À droite, on a un modèle qui a un biais élevé mais une variance faible. On dit qu'il y a surajustement. On aurait intérêt à augmenter le biais pour diminuer la variance.
+- Au milieu, c'est ce qu'on recherche, c'est-à-dire un bon compromis entre biais et variance.
+
 ---
 
 # Introduction
@@ -137,6 +193,13 @@ background-position: 95% 20%
   - Besoin d'un **ensemble de validation** ou de **validation croisée**.
   
 &lt;img src="images/tuning.png" width="75%" style="display: block; margin: auto;" /&gt;
+
+???
+
+- Souvent, en apprentissage supervisé, on doit faire la calibration des hyperparamètres.
+- Un hyperparamètre, c'est simplement un paramètre qui n'est pas entrainé (ou optimisé) directement par l'algorithme.
+- Ces hyperparamètres doivent donc être optimisés par le modélisateur.
+- Il existe plusieurs algorithmes pour faire la calibration des hyperparamètres, comme l'optimisation Bayesienne, mais une manière simple de faire (et souvent suffisante) est de se faire une grille et d'essayer toutes les combinaisons de cette grille. On choisit alors la combinaison menant à la meilleure performance sur des exemples hors-échantillon.
 
 ---
 
