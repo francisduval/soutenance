@@ -461,6 +461,16 @@ background-position: 100% 250%
 ]
 ]
 
+???
+
+- On a testé 3 algorithmes de détection d'anomalies.
+- Ce sont des algorithmes non-supervisés, donc qui utilisent seulement la matrice de design x. Ils n'utilisent pas la variable réponse y.
+- Le but de ces algorithmes est d'assigner un score d'anomalie à chaque point du nuage de points. Plus le point est considéré anormal, plus son score est élevé.
+- Dans ce projet, chaque trajet peut être considéré comme un point dans un nuage de points.
+- C'est vraiment intéressant de savoir comment ces algorithmes là calculent les scores d'anomalies, mais je vais passer rapidement là-dessus.
+- Une chose intéressante à remarquer est que le Local Outlier Factor est différent des 2 autres puisqu'il va aussi détecter les anomalies locales, et non seulement les anomalies globales.
+- Les anomalies globales se retrouvent seulement au bord du nuage de points, tandis que les anomalies locales peuvent aussi être en plein milieu, mais à des endroits où il n'y a pas beaucoup de points.
+
 ---
 
 # Chapitre 2 - Enhancing Claim Classification...
@@ -473,6 +483,11 @@ background-position: 100% 250%
 &lt;img src="images/attributes.png" width="100%" style="display: block; margin: auto;" /&gt;
 
 - Les algorithmes de détection d'anomalies seront appliqués sur ce nuage de points en 8 dimensions.
+
+???
+
+- Ici, on a les 8 variables sur lesquelles on applique la détection d'anomalies.
+- Pour les variables de l'heure de la journée et du temps de la semaine, on a fait un encodage sinus-cosinus pusique ce sont des varaibles cycliques.
 
 ---
 
@@ -494,6 +509,51 @@ background-position: 100% 250%
 ]
 ]
 
+???
+
+- Donc pour calculer les scores de routine et de péculiarité, c'est simple, on applique la détection d'anomalies sur les trajets.
+- La différence entre les 2, c'est que pour la routine, la détection d'anomalies est appliquée sur chaque conducteur (ou véhicule) en isolation. Pour la péculiarité, la détection d'anomalies est faite sur tous les trajets en même temps.
+- Donc ici, le trajet va se voir assigner un haut score d'anomalie s'il est anormal par rapport aux autres trajets de ce véhicule.
+- Tandis qu'ici, il va se voir assigner un haut score s'il est différent par rapport à tous les autres trajets du jeu de données.
+
+---
+
+# Chapitre 2 - Enhancing Claim Classification...
+
+**A-t-on réussi à discriminer .bleu-gras[routiniers] et .bleu-gras[non-routiniers]?**
+
+.panelset.sideways[
+.panel[.panel-name[Un conducteur routinier] 
+&lt;img src="images/routinier.png" width="100%" /&gt;
+]
+.panel[.panel-name[Un conducteur non-routinier]
+&lt;img src="images/non-routinier.png" width="100%" /&gt;
+]
+]
+
+---
+
+# Chapitre 2 - Enhancing Claim Classification...
+
+**A-t-on réussi à discriminer routiniers et non-routiniers?**
+
+&lt;img src="images/profile_routine_vs_nonroutine.png" width="100%" /&gt;
+
+---
+
+# Chapitre 2 - Enhancing Claim Classification...
+
+**A-t-on réussi à discriminer .bleu-gras[péculiers] et .bleu-gras[non-péculiers]?**
+
+.panelset.sideways[
+.panel[.panel-name[Un conducteur péculier]
+asdf
+]
+.panel[.panel-name[Un conducteur non-péculier]
+asdf2
+]
+]
+
 ---
 
 # Chapitre 2 - Enhancing Claim Classification...
@@ -504,6 +564,10 @@ background-position: 100% 250%
 &lt;img src="images/res_chap2.png" width="100%" style="display: block; margin: auto;" /&gt;
 
 **Modèle utilisé**: régression logistique avec pénalité elastic-net.
+
+???
+
+- 
 
 ---
 
