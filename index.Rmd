@@ -425,17 +425,19 @@ Aperçu
 ]
 .bloc.titre.rouge[
 - On calcule un **score** de **routine** et de **péculiarité** pour chaque trajet d'un assuré en utilisant des algorithmes de **détection d'anomalies**.
-- On extrait ensuite des **covariables** de ces scores.
+- On extrait ensuite des **covariables** à partir de ces scores.
 ]
 
 ???
 
-- Avec la technologie télématique, chaque contrat d'assurance peut être lié à un historique complet de conduite.
-- Comment traduire de manière optimale les données de conduite en variables de tarification?
-- La plupart des études créent des variables « à la main ». Biais humain et choix subjectifs.
-- Approche non-supervisée basée sur des méthodes de détection d'anomalies.
-- L'approche non-supervisée a l'avantage d'être plus interprétable.
-- Automatisation l'extraction de variables télématiques.
+- Ce qui nous amène au deuxième article « Enhancing Claim Classification with Feature Extraction From Anomaly-Detection-Derived Routine and Peculiarity Profiles ».
+- Donc pour cet article, on a d'abord pensé que le degré de routine et/ou de péculiarité d'un conducteur assuré peut aider à mieux estimer son risque.
+
+- Le degré de routine, ça répond vraiment à la question « Est-ce que le conducteur fait des trajets qui sont plutôt homogènes, ou plutôt hétérogènes? ». Donc un conducteur qui fait toujours les mêmes trajets aux mêmes heures est considéré routinier. Ça peut se calculer pour chaque conducteur de manière isolée des autres conducteurs.
+- Le degré de péculiarité, ça répond plutôt à la question « Est-ce que le conducteur fait des trajets qui sont plutôt semblables aux trajets des autres conducteurs, ou plutôt similaires? ». Donc un conducteur qui fait souvent des trajets de 200km pendant la nuit serait probablement considéré péculier.
+
+- Donc en résumé, dans cet article, on calcule un score de routine et un score de péculiarité pour chaque trajet en utilisant des algorithmes de détection d'anomalies non-supervisés.
+- On extrait ensuite des variables à partir de ces scores, qu'on utilise dans des modèles de classification.
 
 ---
 
@@ -446,6 +448,12 @@ background-position: 100% 250%
 # Chapitre 2 - Enhancing Claim Classification...
 
 ## Aperçu
+
+???
+
+- Voici un aperçu du projet.
+- On a notre jeu de données télématiques ici, sur lequel on applique un algorithme de détection d'anomalies pour dériver un profil de routine et de péculiarité pour chaque conducteur.
+- On va ensuite résumer ces profils, ce qui va constituer des variables qu'on pourra utiliser pour augmenter le jeu de données avec les variables traditionnelles.
 
 ---
 
@@ -472,20 +480,6 @@ knitr::include_graphics("images/if_ex.png")
 ```
 ]
 ]
-
----
-
-background-image: url(images/lof_ex.png)
-background-size: 70%
-background-position: 90% 90%
-
-# Chapitre 2 - Enhancing Claim Classification...
-
-## Algorithmes de détection d'anomalies
-
-- Méthode de Mahalanobis
-- Local Outlier Factor (LOF)
-- Isolation Forest (IF)
 
 ---
 
