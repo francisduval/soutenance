@@ -919,7 +919,13 @@ knitr::include_graphics("images/results_article_3.png")
 
 ???
 
-
+- Voici les résultats. Donc les pourcentages correspondent à l'amélioration par rapport au modèle de base, qui est un modèle Poisson homogène.
+- On peut se concentrer sur la deuxième colonne, qui est avec données télématiques.
+- On a nos 3 modèles CANN (Poisson, binomiale négative et binomiale négative multivariée) qu'on compare avec des modèles log-linéaires, ou des GLM si vous voulez.
+- Ces modèles log-linéaires utilisent les données télématiques sous forme de variables crée à la main.
+- On voit qu'il y a amélioration de la performance par rapport aux modèle log-linéaires, ce qui veut dire que le réseau CANN a réussi à se créer des représentations utiles à partir des données brutes.
+- Aussi, le modèle longitudinal, donc le MVNB, surpasse les 2 autres modèles transversaux, ce qui suggère que même après avoir pris en compte les variables traditionnelles et télématiques, il reste encore de la dépendance entre les contrats, qui peut être convenablement prise en compte par un modèle longitudinal.
+- Ici, on a choisit la MVNB mais en fait, n'importe quelle distribution multivariée peut être utilisée, en autant qu'on puisse l'exprimer comme une distribution univariée sachant les contrats passées.
 
 ---
 
