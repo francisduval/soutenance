@@ -531,13 +531,27 @@ background-position: 100% 250%
 ]
 ]
 
+???
+
+- Est-ce qu'on a réussi à différencier les routiniers des non-routiniers avec la détection d'anomalies?
+- Pour avoir une idée, j'ai d'abord trouvé un conducteur le plus routinier possible et un autre le plus  non-routinier dans la base de données.
+- Donc celui-ci est routinier puisque ses trajets ont tendance à être faits au mêmes heures et toujours la même distance.
+- Tandis que celui-ci est non-routiner.
+- J'ai ensuite comparé la distribution des scores de routine pour chacun.
+
 ---
 
 # Chapitre 2 - Enhancing Claim Classification...
 
-**A-t-on réussi à discriminer routiniers et non-routiniers?**
+**A-t-on réussi à discriminer .bleu-gras[routiniers] et .bleu-gras[non-routiniers]?**
 
 &lt;img src="images/profile_routine_vs_nonroutine.png" width="100%" /&gt;
+
+Distribution des scores de routine pour les 2 conducteurs.
+
+???
+
+- Malheureusement, il semble que nos scores aient de la difficulté à différencier entre les 2.
 
 ---
 
@@ -547,12 +561,36 @@ background-position: 100% 250%
 
 .panelset.sideways[
 .panel[.panel-name[Un conducteur péculier]
-asdf
+&lt;img src="images/peculier.png" width="100%" /&gt;
 ]
 .panel[.panel-name[Un conducteur non-péculier]
-asdf2
+&lt;img src="images/non-peculier.png" width="100%" /&gt;
 ]
 ]
+
+Ligne noire: distribution globale
+
+???
+
+- Est-ce qu'on a réussi à différencier les péculiers des non-péculiers avec la détection d'anomalies?
+- Donc encore une fois, j'ai trouvé un conducteur le plus péculier possible et un autre le plus non-péculier possible dans la base de données.
+- Donc celui-ci est péculier puisque la distribution de ses trajets est différente de la distribution globale.
+- Tandis que celui-ci est plutôt non-péculier.
+
+---
+
+# Chapitre 2 - Enhancing Claim Classification...
+
+**A-t-on réussi à discriminer .bleu-gras[péculiers] et .bleu-gras[non-péculiers]?**
+
+&lt;img src="images/profile_peculiar_vs_nonpeculiar.png" width="100%" /&gt;
+
+Distribution des scores de péculiarité pour les 2 conducteurs.
+
+???
+
+- Ici, 2 des 3 scores ont réussi à bien différencier les 2.
+- Et c'est dans le bon sens. En effet, le conducteur péculier a des scores plus élevés que le non-péculier.
 
 ---
 
@@ -567,7 +605,13 @@ asdf2
 
 ???
 
-- 
+- Voici les résultats. On compare avec notre modèle de base qui utilise les 10 variables traditionelles en plus de la distance parcourue.
+- Donc la manière dont on donne les scores d'anomalie aux modèles, c'est qu'on va extraire les 11 déciles de la distribution, et on calcule aussi toutes les interactions 2 à 2 entre les déciles.
+- Malheureusement, les scores de routines ne permettent pas d'améliorer la tarification.
+- Mais les scores de péculiarité, oui, et c'est avec l'algorithme de Mahalanobis qu'on arrive aux meilleurs résultats, avec une amélioration de 0.0184 de l'AUC.
+- Par contre, si c'était à recommencer, j'aurais probablement aussi corrigé pour d'autres variables télématiques.
+- Le score de péculiarité est quand même assez fortement corrélé à la durée et à la distance du trajet. Il semble donc que ce score ait réussi à différencier les conducteurs d'autoroute et les conducteurs de ville.
+- Il aurait donc probablement fallu corriger pour la distance moyenne ou la durée par trajet, et pas seulement pour la distance totale.
 
 ---
 
@@ -601,23 +645,28 @@ asdf2
 
 ???
 
-- Insurers have been leveraging telematics data in their pricing models for several years now.
-- Using telematics data in pricing model has many benefits:
-  - More precise pure premium
-  - Incentive for safer and less frequent driving (less accidents, congestion and pollution)
-  - Substitute to sensible rating factors
-  - Etc.
-- Insurers will most of the time take the raw telematics data and try to extract features from it that they think are correlated with the claiming risk:
-  - harsh acceleration/braking
-  - % night driving
-  - % driving in different speed buckets
-  - Etc.
-- This is a good approach, but it heavily relies on human judgement, with its flaws and biases.
-- For instance, how do we define "night driving" or "harsh braking"?
-- An alternative approach is to let the data speak more freely by training a model that automatically learns useful features from raw data.
-- This is what we do in this project, by training a neural network directly on raw telematics data, wih minimal human intervention.
-- Indeed, NNs are known for being good at extracting features from minimally processed data.
-- More specifically, we consider a special architecture called "Combined Actuarial Neural Network", which we compare with a benchmark that uses handcrafted telematics features.
+- Ce qui nous amène au troisième article, « Telematics combined actuarial neural networks for cross-sectional and longitudinal claim count data ».
+- Une approche courante en assurance basée sur l'usage est de créer des variables « à la main » à partir des données télématiques brutes.
+- Une approche alternative consiste à laisser les données s'exprimer plus librement en entraînant un modèle qui apprend automatiquement des représentations utiles à partir des données brutes. Cette approche peut améliorer la performance.
+- C'est ce qu'on fait dans cet article: on utilise une architecture spéciale de réseaux de neurones qui permet de traiter les données télématiques brutes.
+
+&lt;!-- - Insurers have been leveraging telematics data in their pricing models for several years now. --&gt;
+&lt;!-- - Using telematics data in pricing model has many benefits: --&gt;
+&lt;!--   - More precise pure premium --&gt;
+&lt;!--   - Incentive for safer and less frequent driving (less accidents, congestion and pollution) --&gt;
+&lt;!--   - Substitute to sensible rating factors --&gt;
+&lt;!--   - Etc. --&gt;
+&lt;!-- - Insurers will most of the time take the raw telematics data and try to extract features from it that they think are correlated with the claiming risk: --&gt;
+&lt;!--   - harsh acceleration/braking --&gt;
+&lt;!--   - % night driving --&gt;
+&lt;!--   - % driving in different speed buckets --&gt;
+&lt;!--   - Etc. --&gt;
+&lt;!-- - This is a good approach, but it heavily relies on human judgement, with its flaws and biases. --&gt;
+&lt;!-- - For instance, how do we define "night driving" or "harsh braking"? --&gt;
+&lt;!-- - An alternative approach is to let the data speak more freely by training a model that automatically learns useful features from raw data. --&gt;
+&lt;!-- - This is what we do in this project, by training a neural network directly on raw telematics data, wih minimal human intervention. --&gt;
+&lt;!-- - Indeed, NNs are known for being good at extracting features from minimally processed data. --&gt;
+&lt;!-- - More specifically, we consider a special architecture called "Combined Actuarial Neural Network", which we compare with a benchmark that uses handcrafted telematics features. --&gt;
 
 ---
 
@@ -641,21 +690,34 @@ asdf2
 
 ???
 
-- Here is the generic neural network (NN) architecture we use to model the number of claims.
-- Developed by Mario V. Wüthrich and Michael Merz, it is called the "Combined Actuarial Neural Network" or CANN for short.
-- CANN is a two-part neural network consisting of the GLM part and the network part.
-- The GLM part functions like a regular GLM, while the network attached to it aims to capture signals that may have been missed by the GLM.
-- A GLM is limited in its ability to capture interactions between predictors and can only approximate linear functions of predictors. The network part helps improve performance by complementing the GLM.
-- Typically, the parameters of the GLM part are initialized using maximum likelihood, while the parameters of the network part are initialized at zero.
-- This initialization allows the entire neural network to provide decent predictions from the start. During training, the network part is trained on the residuals of the GLM, which can be seen as a neural network boosting of the GLM
-- The CANN architecture offers several advantages:
-  - The GLM part allows for better interpretability.
-  - CANN starts with decent predictions from the GLM, resulting in faster training.
-  - It is a flexible approach. In this example, both parts are fed with the same inputs, but the network part can also accommodate other types of inputs. Neural networks are known to be effective with unstructured data such as telematics data and text data.
-- Another interesting aspect of this approach is that it can be used for feature extraction, with the extracted features then used in a separate GLM. This would allow to leverage the strengths of both neural networks and GLMs: neural networks for complex function approximation and GLMs for their desirable properties.
-- Additionally, the features created in the hidden layers can be visualized using dimensionality reduction techniques, potentially providing insights into telematics data.
-- In summary, this architecture could be valuable in various supervised learning problems, particularly when dealing with unstructured data.
-- In fact, the project consists of training this architecture with telematics information incorporated into the network part. To accomplish this, we consider three popular distribution specifications for count data: Poisson and negative binomial for cross-sectional data, and the Multivariate Negative Binomial for longitudinal data.
+- Voici l'architecture sur laquelle on se base. Ça s'appelle l'architecture CANN.
+- C'est un réseau de neurones en deux parties composé de la partie GLM et de la partie réseau de neurones.
+- La partie GLM fonctionne comme un GLM ordinaire, tandis que le réseau qui lui est attaché vise à capturer le signal qui auraient pu être manqué par le GLM.
+
+- Un GLM est limité dans sa capacité à capturer les interactions entre les prédicteurs et ne peut qu'approximer des fonctions linéaires des prédicteurs. La partie réseau aide à améliorer les performances en complémentant le GLM.
+
+- Généralement, les paramètres de la partie GLM sont initialisés en utilisant le maximum de vraisemblance, tandis que les paramètres de la partie réseau sont initialisés à zéro.
+- Cette initialisation permet au réseau CANN de fournir des prédictions décentes dès le départ. Pendant l'entraînement, la partie réseau est entraînée sur les résidus du GLM, ce qui peut être vu comme un boosting du GLM par un réseau neurones.
+- L'architecture CANN offre plusieurs avantages :
+  - La partie GLM permet une meilleure interprétabilité.
+  - CANN commence avec des prédictions décentes du GLM, ce qui permet un entraînement plus rapide.
+  - C'est une approche flexible. Dans cet exemple, les deux parties sont alimentées avec les mêmes entrées, mais     la partie réseau peut également accueillir d'autres types d'entrées. Les réseaux neuronaux sont connus pour     être efficaces avec des données non structurées comme les données et les données texte. CE n'est pas            nécessairement obligé d'être un perceptron multicouches ici.
+
+&lt;!-- - Here is the generic neural network (NN) architecture we use to model the number of claims. --&gt;
+&lt;!-- - Developed by Mario V. Wüthrich and Michael Merz, it is called the "Combined Actuarial Neural Network" or CANN for short. --&gt;
+&lt;!-- - CANN is a two-part neural network consisting of the GLM part and the network part. --&gt;
+&lt;!-- - The GLM part functions like a regular GLM, while the network attached to it aims to capture signals that may have been missed by the GLM. --&gt;
+&lt;!-- - A GLM is limited in its ability to capture interactions between predictors and can only approximate linear functions of predictors. The network part helps improve performance by complementing the GLM. --&gt;
+&lt;!-- - Typically, the parameters of the GLM part are initialized using maximum likelihood, while the parameters of the network part are initialized at zero. --&gt;
+&lt;!-- - This initialization allows the entire neural network to provide decent predictions from the start. During training, the network part is trained on the residuals of the GLM, which can be seen as a neural network boosting of the GLM --&gt;
+&lt;!-- - The CANN architecture offers several advantages: --&gt;
+&lt;!--   - The GLM part allows for better interpretability. --&gt;
+&lt;!--   - CANN starts with decent predictions from the GLM, resulting in faster training. --&gt;
+&lt;!--   - It is a flexible approach. In this example, both parts are fed with the same inputs, but the network part can also accommodate other types of inputs. Neural networks are known to be effective with unstructured data such as telematics data and text data. --&gt;
+&lt;!-- - Another interesting aspect of this approach is that it can be used for feature extraction, with the extracted features then used in a separate GLM. This would allow to leverage the strengths of both neural networks and GLMs: neural networks for complex function approximation and GLMs for their desirable properties. --&gt;
+&lt;!-- - Additionally, the features created in the hidden layers can be visualized using dimensionality reduction techniques, potentially providing insights into telematics data. --&gt;
+&lt;!-- - In summary, this architecture could be valuable in various supervised learning problems, particularly when dealing with unstructured data. --&gt;
+&lt;!-- - In fact, the project consists of training this architecture with telematics information incorporated into the network part. To accomplish this, we consider three popular distribution specifications for count data: Poisson and negative binomial for cross-sectional data, and the Multivariate Negative Binomial for longitudinal data. --&gt;
 
 ---
 
@@ -685,13 +747,20 @@ asdf2
 
 ???
 
-- From this telematics dataset, we therefore create 4 telematics vectors.
-- The first one, h, is of dimension 24 (for the 24 hours of the day), and each elements is the fraction of driving in the correponding hour of the day. For instance, `\(h_1\)` is the fraction of driving for a given contract made between midnight and 1:00.
-- The second one is similar, but instead records the fraction of driving in each day of the week.
-- vmo records the fraction of trips made in different buckets of average speed. I made 10 kilometers per hour buckets, so for instance, vmo_1 is the fraction of trips made at an average speed between 0 and 10 kph. 
-- vma is the same, but for maximum speed. 
-- We then concatenate these 4 vectors into 1 big telematics vector, which summarises the driving habits of a given contract.
-- These telematics inputs are represented by green circles.
+- Donc ici j'explique comment on donne en entrée au réseau les données télématiques.
+- On se créée 5 vecteurs, chacun de représentant une information télématique.
+- Donc le premier est pour l'heure de la journée du trajet, le deuxième pour le jour de la semaine, le troisième pour la vitesse moyenne, le quatrième pour la vitesse maximaleet le cinquième pour la distance.
+- On se créée des intervalles. Donc par exemple, la vitesse moyenne et la vitesse maximale sont par intervalles de 10km/h.
+- On concatène ces 5 vecteurs en un seul, qui sera donné en entrée à la partie réseau du modèle CANN.
+- Chaque conducteur a donc sa conduite décrite par ce vecteur télématique.
+
+&lt;!-- - From this telematics dataset, we therefore create 4 telematics vectors. --&gt;
+&lt;!-- - The first one, h, is of dimension 24 (for the 24 hours of the day), and each elements is the fraction of driving in the correponding hour of the day. For instance, `\(h_1\)` is the fraction of driving for a given contract made between midnight and 1:00. --&gt;
+&lt;!-- - The second one is similar, but instead records the fraction of driving in each day of the week. --&gt;
+&lt;!-- - vmo records the fraction of trips made in different buckets of average speed. I made 10 kilometers per hour buckets, so for instance, vmo_1 is the fraction of trips made at an average speed between 0 and 10 kph.  --&gt;
+&lt;!-- - vma is the same, but for maximum speed.  --&gt;
+&lt;!-- - We then concatenate these 4 vectors into 1 big telematics vector, which summarises the driving habits of a given contract. --&gt;
+&lt;!-- - These telematics inputs are represented by green circles. --&gt;
 
 ---
 
