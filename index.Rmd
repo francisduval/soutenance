@@ -81,8 +81,9 @@ De nombreux bénéfices!
 ???
 
 - Ma thèse vise à améliorer la modélisation des sinistres en assurance automobile, plus précisément en assurance basée sur l'usage.
-- L'assurance basée sur l'usage est un modèle d'assurance où les primes sont calculées en fonction de données collectées sur l'assuré.
-- En assurance automobile, ces données, qu'on appelle « données télématiques », sont collectées à l'aide d'un dispositif installé dans le véhicule ou d'une application mobile.
+- L'assurance basée sur l'usage est un modèle d'assurance dans lequel les primes sont calculée selon l'utilisation réelle faite du véhicule.
+- Pour ce faire, on collecte des données sur la conduite de l'assuré, qu'on appelle « données télématiques ».
+- Ces données sont collectées à l'aide d'un dispositif installé dans le véhicule avec une application mobile.
 - Ces données peuvent inclure la distance parcourue par l'assuré, les heures de conduite, la localisation, les freinages brusques, et bien d'autres encore.
 - Traditionnellement, la tarification est faite en ne regardant pas l'utilisation du véhicule. On tarifie avec un ensemble de caratéristiques du risque comme l'âge et le genre de l'assuré, l'âge du véhicule, la région et plusieurs autres.
 
@@ -944,4 +945,11 @@ knitr::include_graphics("images/results_article_3.png")
 ### Chapitre 3
 
 - Construction d'un modèle de comptage des réclamations basé sur l'architecture CANN et adapté à des données longitudinales.
+
+---
+
+# Remerciements
+
+
+
 
