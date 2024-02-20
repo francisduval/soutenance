@@ -804,8 +804,8 @@ $\textbf{vecteur_telematique} = (\boldsymbol{h}, \boldsymbol{p}, \boldsymbol{vmo
 ???
 
 - Donc ici j'explique comment on donne en entrée au réseau les données télématiques.
-- On se créée 5 vecteurs, chacun de représentant une information télématique.
-- Donc le premier est pour l'heure de la journée du trajet, le deuxième pour le jour de la semaine, le troisième pour la vitesse moyenne, le quatrième pour la vitesse maximaleet le cinquième pour la distance.
+- On se créée 5 vecteurs, chacun représentant une information télématique.
+- Donc le premier est pour l'heure de la journée du trajet, le deuxième pour le jour de la semaine, le troisième pour la vitesse moyenne, le quatrième pour la vitesse maximale et le cinquième pour la distance.
 - On se créée des intervalles. Donc par exemple, la vitesse moyenne et la vitesse maximale sont par intervalles de 10km/h.
 - On concatène ces 5 vecteurs en un seul, qui sera donné en entrée à la partie réseau du modèle CANN.
 - Chaque conducteur a donc sa conduite décrite par ce vecteur télématique.
@@ -821,9 +821,121 @@ $\textbf{vecteur_telematique} = (\boldsymbol{h}, \boldsymbol{p}, \boldsymbol{vmo
 ---
 
 # Chapitre 3 - Telematics Combined Actuarial...
+.vspace-neg2[]
+## Binomiale négative
+
+.panelset.sideways[
+.panel[.panel-name[PMF]
+```{r, echo=F, out.width="100%"}
+knitr::include_graphics("images/eq_nb.png")
+```
+]
+.panel[.panel-name[Architecture]
+.vspace-neg[]
+```{r, echo=F, out.width="95%"}
+knitr::include_graphics("images/architecture_nb.png")
+```
+]
+]
+
+???
+
+- Donc on arrive au modèle.
+- On a considéré en fait 3 distributions pour la variable réponse du nombre de réclamations: la Poisson, la binomiale négative et la binomiale négative multivariée, qui est pour les données longitudinales.
+- On va passer la Poisson, puisque c'est un cas particulier de la binomiale négative.
+
+- Donc pour la binomiale négative, voici la fonction de masse de probabilités.
+- Cette spécification là a l'avantage par rapport à la Poisson d'admettre de la surdispersion grâce au paramètre phi, et va donc souvent mieux modéliser les réclamations que la Poisson.
+- On a 2 paramètres à estimer: le paramètre mu et le paramètre phi.
+
+- L'architecture ressemble à ça. Donc le réseau a 2 sorties puisqu'il y a 2 paramètres à modéliser.
+- Tout d'abord, on a décidé de ne pas mettre d'hétérogénéité dans le paramètre phi, donc on va simplement mettre un paramètre entrainable qui va être passé dans la fonction softplus, pour s'assurer que phi est positif.
+- Ensuite, on a que le paramètre mu est la somme des 2 parties du CANN (partie GLM et partie réseau).
+- Les entrées ici sont le vecteur télématique en plus de variables de tarification traditionnelles. Donc on permet au réseau de considérer les interations entre la télématiques et les variables traditionnelles.
+- Ces entrées passent par 3 couches pleinement connectées pour obtenir une valeur $a_1^4$.
+- Pour la partie GLM, on met seulement les variables traditionnelles, donc pas de télématique.
+- Pour obtenir le paramètre mu, on somme les 2 parties du réseau, et on applique la fonction softplus pour s'assurer que mu est positif.
+- Donc les bêtas ici sont initialisés au maximum de vraisemblance, tandis que les poids et biais de la partie réseau sont initialisés près de zéro.
+- La fonction de perte utilisées est la log-vraisemblance négative, et on peut entrainer facilement ce réseau en appliquant la descente de gradient.
+
+---
+
+# Chapitre 3 - Telematics Combined Actuarial...
+.vspace-neg2[]
+## Binomiale négative multivariée
+
+.panelset.sideways[
+.panel[.panel-name[PMF]
+Sachant les réclamations passées, Y suit une **binomiale négative**:
+<br>
+<br>
+```{r, echo=F, out.width="100%"}
+knitr::include_graphics("images/eq_mvnb.png")
+```
+<br>
+<br>
+<br>
+où
+<br>
+\begin{align*}
+  \alpha_{it} &= \phi + \sum_{i'=1}^{t-1}y_{it'} \quad \text{(paramètre phi + somme réclamations passées)}\\
+  \gamma_{it} &= \phi + \sum_{i'=1}^{t-1}\mu(x_{it'}) \quad \text{(paramètre phi + somme mus passées)}
+\end{align*}
+]
+.panel[.panel-name[Architecture]
+```{r, echo=F, out.width="75%"}
+knitr::include_graphics("images/architecture_mvnb.png")
+```
+]
+]
+
+???
+
+- Donc ici, c'est notre modèle longitudinal, donc on utilise la spécification négative binomiale multivariée.
+- On utilise le fait que sachant les réclamations passées d'un assuré, le nombre de réclamation Y_it suit une binomiale négative, mais où les paramètres alpha et gamma dépendent de la somme de réclamations passées et de la somme des mus estimés passés.
+- Donc alpha_it est égal à un paramètre phi plus la somme des réclamations passées, et gamma_it est égal à phi plus la somme des mus passés.
+
+- Voici l'architecture utilisées. On a 3 paramètres à modéliser, donc on a un réseau à 3 sorties.
+- La partie du haut pour modéliser mu reste la même que pour la binomiale négative.
+- Pour obtenir phi, même chose aussi, on a un paramètre entrainable qu'on passe dans la softplus.
+- Ensuite pour obtenir alpha, on ajoute la somme des réclamations passées à phi.
+- Pour obtenir gamma, on ajoute la somme des mus passées à phi.
+- C'est au niveau de l'entrainement du réseau que ça se complique un peu.
+- Pour le alpha, c'est facile, on a juste à se rajouter une colonne du nombre de réclamations passées dans notre jeu de données.
+- C'est pour le gamma que c'est plus compliqué, parce que ça dépend de la somme des mus estimés passés, mais les mus estimés passés, c'est justement ce qu'on essaie de trouver avec ce modèles. On a un problème du type « la poule ou l'oeuf ».
+- Ce qu'on fait alors, c'est qu'on se créée une colonne des mus passés, qu'on initialise avec des valeurs trouvées par un modèle classique.
+- À chaque époque complétées dans l'entrainement du réseau, on va aller mettre à jour cette colonne avec les poids courants du modèle.
+
+---
+
+# Chapitre 3 - Telematics Combined Actuarial...
+
+## Résultats
+.vspace-neg2[]
+% d'amélioration par rapport au modèle de base (modèle Poisson homogène).
+```{r, echo=F, out.width="72%", fig.align='center'}
+knitr::include_graphics("images/results_article_3.png")
+```
+
+???
+
+
 
 ---
 
 # Conclusion
 
+## <span style="text-decoration: underline;">En résumé</span>
+
+### Chapitre 1
+
+- Développement d'une méthode permettant de connaitre la quantité minimale d'information télématique nécessaire pour avoir une bonne estimation du risque.
+
+### Chapitre 2
+
+- Élaboration d'une méthode basée sur des algorithmes de détection d'anomalies pour extraire des profiles de routine et de péculiarité des conducteurs, et utilisation dans un modèle de classification.
+
+### Chapitre 3
+
+- Construction d'un modèle de comptage des réclamations basé sur l'architecture CANN et adapté à des données longitudinales.
 

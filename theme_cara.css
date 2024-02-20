@@ -285,6 +285,11 @@ table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
   display: block;
 }
 
+.hspace-pos {
+  margin-left: 50px; /* Ajustez la valeur en fonction de l'espace désiré */
+  display: block;
+}
+
 .titre-page-titre {
   font-size: 2.1rem;
   color: #FFFFFF;
