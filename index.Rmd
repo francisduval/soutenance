@@ -1,6 +1,6 @@
 ---
-title: "Le pouvoir du xaringan : créez des présentations élégantes et reproductibles avec RMarkdown"
-subtitle: "Séminaire d'été d'actuariat et de statistique"
+title: "Soutenance de thèse - Francis Duval"
+subtitle: ""
 author: "Francis Duval"
 institute: "Université du Québec à Montréal"
 date: "`r Sys.Date()`"
@@ -302,10 +302,19 @@ knitr::include_graphics("images/separation.png")
 
 ## Motivations
 
-- On sait que les données télématiques peuvent aider à mieux tarifer.
-- Données volumineuses qui peuvent être difficile et coûteuses à stocker.
-- De plus, peuvent être longues à processer.
-- D'où la question « Quelle quantité d'information télématique a-t-on besoin? ».
+.titre-bloc.bleu[
+Inconvénients
+]
+.bloc.titre.bleu[
+- **Données télématiques volumineuses:**
+  - Difficiles et coûteuses à stocker
+  - Demandent beaucoup de puissance de calcul dans les algorithmes
+]
+<br>
+<br>
+<br>
+<br>
+D'où la question « .bleu-gras[Quelle quantité d'information télématique a-t-on besoin minimalement pour bien estimer le risque?] ».
 
 ???
 
