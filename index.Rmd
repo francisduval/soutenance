@@ -990,3 +990,19 @@ knitr::include_graphics("images/results_article_3.png")
 **Conseil de recherches en sciences naturelles et en génie du Canada**
 
 **Les fonds de recherche du Québec**
+
+???
+
+- J'aimerais tout d'abord remercier mes 2 co-directeurs de recherche, Jean-Philippe Boucher et Mathieu Pigeon, qui ont largement contribué à ma thèse, et qui m'ont grandement aidé à publier mes articles. Merci d'avoir été disponibles pour répondre à toutes mes questions, même parfois pendant vos vacances. Merci de vous être assurés que ma recherche avancait bien. Et merci pour votre temps et votre professionnalisme.
+
+- J'aimerais également exprimer ma gratitude envers les 3 membres du Jury, qui ont lu et corrigé minutieusement ma thèse. C'est long lire 125 pages de manière attentive, donc un gros merci pour votre temps.
+
+- Merci à Alain Desgagné, le représentant du Doyen de la Faculté des Sciences. Merci d'avoir animé cette séance.
+
+- J'aimerais dire merci à mon collègue chez Co-operators Marc Morin, qui m'a beaucoup aidé avec les réseaux de neurones, particulièrement avec le pacakge Torch.
+
+- Merci à mes collègues de la Chaire CARA, avec qui j'ai partagé du bon temps, et avec qui j'ai eu de bonnes discussion amicales et scientifiques.
+
+- Merci à la Chaire Co-operators pour m'avoir financé et pour avoir fournies des données sur lesqulles j'ai pu travailler.
+
+- Et finalement, merci aux 2 organismes gouvernementaux, le CRSNG et le FRQNT, pour le financement.
